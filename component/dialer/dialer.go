@@ -36,6 +36,10 @@ func DialContext(ctx context.Context, network, address string, options ...Option
 }
 
 func ListenPacket(ctx context.Context, network, address string, options ...Option) (net.PacketConn, error) {
+	if DefaultSocketHook != nil {
+		return listenPacketHooked(ctx, network, address)
+	}
+
 	cfg := &option{
 		interfaceName: DefaultInterface.Load(),
 		routingMark:   int(DefaultRoutingMark.Load()),
@@ -68,6 +72,10 @@ func ListenPacket(ctx context.Context, network, address string, options ...Optio
 }
 
 func dialContext(ctx context.Context, network string, destination net.IP, port string, options []Option) (net.Conn, error) {
+	if DefaultSocketHook != nil {
+		return dialContextHooked(ctx, network, destination, port)
+	}
+
 	opt := &option{
 		interfaceName: DefaultInterface.Load(),
 		routingMark:   int(DefaultRoutingMark.Load()),

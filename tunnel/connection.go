@@ -43,10 +43,6 @@ func handleUDPToLocal(packet C.UDPPacket, pc C.PacketConn, key string, fAddr net
 	_, _ = copyPacketTimeout(packet, pc, udpTimeout, fSocksaddr, fAddr != nil)
 }
 
-func handleSocket(ctx C.ConnContext, outbound net.Conn) {
-	cN.Relay(ctx.Conn(), outbound)
-}
-
 func copyPacketTimeout(dst N.PacketWriter, src N.TimeoutPacketReader, timeout time.Duration, fAddr M.Socksaddr, fOverride bool) (n int64, err error) {
 	_buffer := buf.StackNewPacket()
 	defer common.KeepAlive(_buffer)
@@ -74,4 +70,15 @@ func copyPacketTimeout(dst N.PacketWriter, src N.TimeoutPacketReader, timeout ti
 		}
 		n += int64(dataLen)
 	}
+}
+
+func handleSocket(ctx C.ConnContext, outbound net.Conn) {
+	left := unwrap(ctx.Conn())
+	right := unwrap(outbound)
+
+	if relayHijack(left, right) {
+		return
+	}
+
+	cN.Relay(ctx.Conn(), outbound)
 }

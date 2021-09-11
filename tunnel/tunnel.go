@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
@@ -333,15 +332,12 @@ func match(metadata *C.Metadata) (C.Proxy, C.Rule, error) {
 		if !processFound && rule.ShouldFindProcess() {
 			processFound = true
 
-			srcPort, err := strconv.ParseUint(metadata.SrcPort, 10, 16)
-			if err == nil {
-				path, err := P.FindProcessName(metadata.NetWork.String(), metadata.SrcIP, int(srcPort))
-				if err != nil {
-					log.Debugln("[Process] find process %s: %v", metadata.String(), err)
-				} else {
-					log.Debugln("[Process] %s from process %s", metadata.String(), path)
-					metadata.ProcessPath = path
-				}
+			path, err := P.FindPackageName(metadata)
+			if err != nil {
+				log.Debugln("[Process] find process %s: %v", metadata.String(), err)
+			} else {
+				log.Debugln("[Process] %s from process %s", metadata.String(), path)
+				metadata.ProcessPath = path
 			}
 		}
 

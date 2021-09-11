@@ -48,6 +48,8 @@ func (s *Server) setHandler(handler handler) {
 }
 
 func ReCreateServer(addr string, resolver *Resolver, mapper *ResolverEnhancer) {
+	UpdateIsolateHandler(resolver, mapper)
+
 	if addr == address && resolver != nil {
 		handler := newHandler(resolver, mapper)
 		server.setHandler(handler)

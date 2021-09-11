@@ -101,53 +101,60 @@ type Config struct {
 }
 
 type RawDNS struct {
-	Enable            bool              `yaml:"enable"`
-	IPv6              bool              `yaml:"ipv6"`
-	UseHosts          bool              `yaml:"use-hosts"`
-	NameServer        []string          `yaml:"nameserver"`
-	Fallback          []string          `yaml:"fallback"`
-	FallbackFilter    RawFallbackFilter `yaml:"fallback-filter"`
-	Listen            string            `yaml:"listen"`
-	EnhancedMode      C.DNSMode         `yaml:"enhanced-mode"`
-	FakeIPRange       string            `yaml:"fake-ip-range"`
-	FakeIPFilter      []string          `yaml:"fake-ip-filter"`
-	DefaultNameserver []string          `yaml:"default-nameserver"`
-	NameServerPolicy  map[string]string `yaml:"nameserver-policy"`
+	Enable            bool              `yaml:"enable" json:"enable"`
+	IPv6              bool              `yaml:"ipv6" json:"ipv6"`
+	UseHosts          bool              `yaml:"use-hosts" json:"use-hosts"`
+	NameServer        []string          `yaml:"nameserver" json:"nameserver"`
+	Fallback          []string          `yaml:"fallback" json:"fallback"`
+	FallbackFilter    RawFallbackFilter `yaml:"fallback-filter" json:"fallback-filter"`
+	Listen            string            `yaml:"listen" json:"listen"`
+	EnhancedMode      C.DNSMode         `yaml:"enhanced-mode" json:"enhanced-mode"`
+	FakeIPRange       string            `yaml:"fake-ip-range" json:"fake-ip-range"`
+	FakeIPFilter      []string          `yaml:"fake-ip-filter" json:"fake-ip-filter"`
+	DefaultNameserver []string          `yaml:"default-nameserver" json:"default-nameserver"`
+	NameServerPolicy  map[string]string `yaml:"nameserver-policy" json:"nameserver-policy"`
 }
 
 type RawFallbackFilter struct {
-	GeoIP     bool     `yaml:"geoip"`
-	GeoIPCode string   `yaml:"geoip-code"`
-	IPCIDR    []string `yaml:"ipcidr"`
-	Domain    []string `yaml:"domain"`
+	GeoIP     bool     `yaml:"geoip" json:"geoip"`
+	GeoIPCode string   `yaml:"geoip-code" json:"geoip-code"`
+	IPCIDR    []string `yaml:"ipcidr" json:"ipcidr"`
+	Domain    []string `yaml:"domain" json:"domain"`
+}
+
+type RawClashForAndroid struct {
+	AppendSystemDNS   bool   `yaml:"append-system-dns" json:"append-system-dns"`
+	UiSubtitlePattern string `yaml:"ui-subtitle-pattern" json:"ui-subtitle-pattern"`
 }
 
 type RawConfig struct {
-	Port               int          `yaml:"port"`
-	SocksPort          int          `yaml:"socks-port"`
-	RedirPort          int          `yaml:"redir-port"`
-	TProxyPort         int          `yaml:"tproxy-port"`
-	MixedPort          int          `yaml:"mixed-port"`
-	Authentication     []string     `yaml:"authentication"`
-	AllowLan           bool         `yaml:"allow-lan"`
-	BindAddress        string       `yaml:"bind-address"`
-	Mode               T.TunnelMode `yaml:"mode"`
-	LogLevel           log.LogLevel `yaml:"log-level"`
-	IPv6               bool         `yaml:"ipv6"`
-	ExternalController string       `yaml:"external-controller"`
-	ExternalUI         string       `yaml:"external-ui"`
-	Secret             string       `yaml:"secret"`
-	Interface          string       `yaml:"interface-name"`
-	RoutingMark        int          `yaml:"routing-mark"`
+	Port               int          `yaml:"port" json:"port"`
+	SocksPort          int          `yaml:"socks-port" json:"socks-port"`
+	RedirPort          int          `yaml:"redir-port" json:"redir-port"`
+	TProxyPort         int          `yaml:"tproxy-port" json:"tproxy-port"`
+	MixedPort          int          `yaml:"mixed-port" json:"mixed-port"`
+	Authentication     []string     `yaml:"authentication" json:"authentication"`
+	AllowLan           bool         `yaml:"allow-lan" json:"allow-lan"`
+	BindAddress        string       `yaml:"bind-address" json:"bind-address"`
+	Mode               T.TunnelMode `yaml:"mode" json:"mode"`
+	LogLevel           log.LogLevel `yaml:"log-level" json:"log-level"`
+	IPv6               bool         `yaml:"ipv6" json:"ipv6"`
+	ExternalController string       `yaml:"external-controller" json:"external-controller"`
+	ExternalUI         string       `yaml:"external-ui" json:"external-ui"`
+	Secret             string       `yaml:"secret" json:"secret"`
+	Interface          string       `yaml:"interface-name" json:"interface-name"`
+	RoutingMark        int          `yaml:"routing-mark" json:"routing-mark"`
 
-	ProxyProvider map[string]map[string]any `yaml:"proxy-providers"`
-	Hosts         map[string]string         `yaml:"hosts"`
-	DNS           RawDNS                    `yaml:"dns"`
-	Experimental  Experimental              `yaml:"experimental"`
-	Profile       Profile                   `yaml:"profile"`
-	Proxy         []map[string]any          `yaml:"proxies"`
-	ProxyGroup    []map[string]any          `yaml:"proxy-groups"`
-	Rule          []string                  `yaml:"rules"`
+	ProxyProvider map[string]map[string]any `yaml:"proxy-providers" json:"proxy-providers"`
+	Hosts         map[string]string         `yaml:"hosts" json:"hosts"`
+	DNS           RawDNS                    `yaml:"dns" json:"dns"`
+	Experimental  Experimental              `yaml:"experimental" json:"experimental"`
+	Profile       Profile                   `yaml:"profile" json:"profile"`
+	Proxy         []map[string]any          `yaml:"proxies" json:"proxies"`
+	ProxyGroup    []map[string]any          `yaml:"proxy-groups" json:"proxy-groups"`
+	Rule          []string                  `yaml:"rules" json:"rules"`
+
+	ClashForAndroid RawClashForAndroid `yaml:"clash-for-android" json:"clash-for-android"`
 }
 
 // Parse config
