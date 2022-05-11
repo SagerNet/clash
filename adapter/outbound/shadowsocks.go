@@ -2,10 +2,12 @@ package outbound
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 
 	"github.com/Dreamacro/clash/common/structure"
 	"github.com/Dreamacro/clash/component/dialer"
@@ -13,13 +15,19 @@ import (
 	obfs "github.com/Dreamacro/clash/transport/simple-obfs"
 	"github.com/Dreamacro/clash/transport/socks5"
 	v2rayObfs "github.com/Dreamacro/clash/transport/v2ray-plugin"
-
-	"github.com/Dreamacro/go-shadowsocks2/core"
+	"github.com/sagernet/sing/common"
+	M "github.com/sagernet/sing/common/metadata"
+	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/common/random"
+	"github.com/sagernet/sing/protocol/shadowsocks"
+	"github.com/sagernet/sing/protocol/shadowsocks/shadowaead"
+	"github.com/sagernet/sing/protocol/shadowsocks/shadowaead_2022"
+	"github.com/sagernet/sing/protocol/shadowsocks/shadowstream"
 )
 
 type ShadowSocks struct {
 	*Base
-	cipher core.Cipher
+	method shadowsocks.Method
 
 	// obfs
 	obfsMode    string
@@ -32,7 +40,8 @@ type ShadowSocksOption struct {
 	Name       string         `proxy:"name"`
 	Server     string         `proxy:"server"`
 	Port       int            `proxy:"port"`
-	Password   string         `proxy:"password"`
+	Password   string         `proxy:"password,omitempty"`
+	Key        string         `proxy:"key,omitempty"`
 	Cipher     string         `proxy:"cipher"`
 	UDP        bool           `proxy:"udp,omitempty"`
 	Plugin     string         `proxy:"plugin,omitempty"`
@@ -69,9 +78,7 @@ func (ss *ShadowSocks) StreamConn(c net.Conn, metadata *C.Metadata) (net.Conn, e
 			return nil, fmt.Errorf("%s connect error: %w", ss.addr, err)
 		}
 	}
-	c = ss.cipher.StreamConn(c)
-	_, err := c.Write(serializesSocksAddr(metadata))
-	return c, err
+	return ss.method.DialConn(c, M.ParseSocksaddr(metadata.RemoteAddress()))
 }
 
 // DialContext implements C.ProxyAdapter
@@ -100,16 +107,67 @@ func (ss *ShadowSocks) ListenPacketContext(ctx context.Context, metadata *C.Meta
 		pc.Close()
 		return nil, err
 	}
-
-	pc = ss.cipher.PacketConn(pc)
-	return newPacketConn(&ssPacketConn{PacketConn: pc, rAddr: addr}, ss), nil
+	pc = ss.method.DialPacketConn(&N.BindPacketConn{PacketConn: pc, Addr: addr})
+	return newPacketConn(pc, ss), nil
 }
 
 func NewShadowSocks(option ShadowSocksOption) (*ShadowSocks, error) {
 	addr := net.JoinHostPort(option.Server, strconv.Itoa(option.Port))
 	cipher := option.Cipher
-	password := option.Password
-	ciph, err := core.PickCipher(cipher, nil, password)
+	var method shadowsocks.Method
+	var err error
+	if cipher == "dummy" || cipher == "none" {
+		method = shadowsocks.NewNone()
+	} else if common.Contains(shadowstream.List, cipher) {
+		var key []byte
+		if option.Key != "" {
+			key, err = base64.StdEncoding.DecodeString(option.Key)
+			if err == nil {
+				goto returnErr
+			}
+		}
+		method, err = shadowstream.New(cipher, key, []byte(option.Password), random.Default)
+		if err != nil {
+			goto returnErr
+		}
+	} else if common.Contains(shadowaead.List, cipher) {
+		var key []byte
+		if option.Key != "" {
+			key, err = base64.StdEncoding.DecodeString(option.Key)
+			if err == nil {
+				goto returnErr
+			}
+		}
+		method, err = shadowaead.New(cipher, key, []byte(option.Password), random.Default)
+		if err != nil {
+			goto returnErr
+		}
+	} else if common.Contains(shadowaead_2022.List, cipher) {
+		var pskList [][shadowaead_2022.KeySaltSize]byte
+		if option.Key != "" {
+			for _, pskStr := range strings.Split(option.Key, ":") {
+				var pskB []byte
+				pskB, err = base64.StdEncoding.DecodeString(pskStr)
+				if err != nil {
+					goto returnErr
+				}
+				if len(pskB) != shadowaead_2022.KeySaltSize {
+					err = fmt.Errorf("bad psk")
+					goto returnErr
+				}
+				var psk [shadowaead_2022.KeySaltSize]byte
+				copy(psk[:], pskB)
+				pskList = append(pskList, psk)
+			}
+		}
+		method, err = shadowaead_2022.New(cipher, pskList, random.Default)
+		if err != nil {
+			goto returnErr
+		}
+	} else {
+		err = fmt.Errorf("unsupported cipher %s", cipher)
+	}
+returnErr:
 	if err != nil {
 		return nil, fmt.Errorf("ss %s initialize error: %w", addr, err)
 	}
@@ -162,7 +220,7 @@ func NewShadowSocks(option ShadowSocksOption) (*ShadowSocks, error) {
 			iface: option.Interface,
 			rmark: option.RoutingMark,
 		},
-		cipher: ciph,
+		method: method,
 
 		obfsMode:    obfsMode,
 		v2rayOption: v2rayOption,
