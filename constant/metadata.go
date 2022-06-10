@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net"
 	"strconv"
+
+	M "github.com/sagernet/sing/common/metadata"
 )
 
 // Socks addr type
@@ -112,6 +114,18 @@ func (m *Metadata) UDPAddr() *net.UDPAddr {
 	return &net.UDPAddr{
 		IP:   m.DstIP,
 		Port: int(port),
+	}
+}
+
+func (m *Metadata) Socksaddr() M.Socksaddr {
+	port, _ := strconv.ParseUint(m.DstPort, 10, 16)
+	if m.Host != "" {
+		return M.Socksaddr{
+			Fqdn: m.Host,
+			Port: uint16(port),
+		}
+	} else {
+		return M.SocksaddrFrom(m.DstIP, uint16(port))
 	}
 }
 

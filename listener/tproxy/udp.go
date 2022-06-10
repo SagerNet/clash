@@ -5,9 +5,9 @@ import (
 	"net/netip"
 
 	"github.com/Dreamacro/clash/adapter/inbound"
-	"github.com/Dreamacro/clash/common/pool"
 	C "github.com/Dreamacro/clash/constant"
-	"github.com/Dreamacro/clash/transport/socks5"
+	"github.com/sagernet/sing/common/buf"
+	M "github.com/sagernet/sing/common/metadata"
 )
 
 type UDPListener struct {
@@ -58,10 +58,10 @@ func NewUDP(addr string, in chan<- *inbound.PacketAdapter) (*UDPListener, error)
 	go func() {
 		oob := make([]byte, 1024)
 		for {
-			buf := pool.Get(pool.UDPBufferSize)
-			n, oobn, _, lAddr, err := c.ReadMsgUDPAddrPort(buf, oob)
+			buffer := buf.NewPacket()
+			n, oobn, _, lAddr, err := c.ReadMsgUDPAddrPort(buffer.FreeBytes(), oob)
 			if err != nil {
-				pool.Put(buf)
+				buffer.Release()
 				if rl.closed {
 					break
 				}
@@ -72,21 +72,21 @@ func NewUDP(addr string, in chan<- *inbound.PacketAdapter) (*UDPListener, error)
 			if err != nil {
 				continue
 			}
-			handlePacketConn(in, buf[:n], lAddr, rAddr)
+			buffer.Truncate(n)
+			handlePacketConn(in, buffer, lAddr, rAddr)
 		}
 	}()
 
 	return rl, nil
 }
 
-func handlePacketConn(in chan<- *inbound.PacketAdapter, buf []byte, lAddr, rAddr netip.AddrPort) {
-	target := socks5.AddrFromStdAddrPort(rAddr)
+func handlePacketConn(in chan<- *inbound.PacketAdapter, buf *buf.Buffer, lAddr, rAddr netip.AddrPort) {
 	pkt := &packet{
 		lAddr: lAddr,
 		buf:   buf,
 	}
 	select {
-	case in <- inbound.NewPacket(target, pkt, C.TPROXY):
+	case in <- inbound.NewPacket(M.SocksaddrFromNetIP(rAddr), pkt, C.TPROXY):
 	default:
 	}
 }

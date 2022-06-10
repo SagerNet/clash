@@ -1,5 +1,7 @@
 package pool
 
+import "github.com/sagernet/sing/common/buf"
+
 const (
 	// io.Copy default buffer size is 32 KiB
 	// but the maximum packet size of vmess/shadowsocks is about 16 KiB
@@ -13,9 +15,9 @@ const (
 )
 
 func Get(size int) []byte {
-	return defaultAllocator.Get(size)
+	return buf.Get(size)
 }
 
-func Put(buf []byte) error {
-	return defaultAllocator.Put(buf)
+func Put(buffer []byte) error {
+	return buf.Put(buffer)
 }
