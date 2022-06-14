@@ -13,6 +13,7 @@ require (
 	github.com/oschwald/geoip2-golang v1.7.0
 	github.com/sagernet/sing v0.0.0-20220616051325-90beb46c6d22
 	github.com/sagernet/sing-shadowsocks v0.0.0-20220616051605-ba1ca0fe9782
+	github.com/sagernet/sing-vmess v0.0.0-20220616051646-3d3fc5d01eec
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1
 	go.etcd.io/bbolt v1.3.6

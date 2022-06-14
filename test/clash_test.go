@@ -23,6 +23,8 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/sagernet/sing/common/buf"
+	N "github.com/sagernet/sing/common/network"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -31,6 +33,7 @@ const (
 	ImageShadowsocks     = "mritd/shadowsocks:latest"
 	ImageShadowsocksRust = "ghcr.io/shadowsocks/ssserver-rust:latest"
 	ImageVmess           = "v2fly/v2fly-core:latest"
+	ImageVmessV5         = "sagernet/v2fly-core:latest"
 	ImageTrojan          = "trojangfw/trojan:latest"
 	ImageTrojanGo        = "p4gefau1t/trojan-go:latest"
 	ImageSnell           = "ghcr.io/icpz/snell-server:latest"
@@ -97,6 +100,7 @@ func init() {
 		ImageShadowsocks,
 		ImageShadowsocksRust,
 		ImageVmess,
+		ImageVmessV5,
 		ImageTrojan,
 		ImageTrojanGo,
 		ImageSnell,
@@ -439,8 +443,8 @@ func testLargeDataWithPacketConn(t *testing.T, pc net.PacketConn) error {
 	writeRandData := func(pc net.PacketConn, addr net.Addr) (map[int][]byte, error) {
 		hashMap := map[int][]byte{}
 		mux := sync.Mutex{}
-		for i := 0; i < times; i++ {
-			go func(idx int) {
+		go func() {
+			for idx := 0; idx < times; idx++ {
 				buf := make([]byte, chunkSize)
 				if _, err := rand.Read(buf[1:]); err != nil {
 					t.Log(err.Error())
@@ -457,8 +461,8 @@ func testLargeDataWithPacketConn(t *testing.T, pc net.PacketConn) error {
 					t.Log(err.Error())
 					return
 				}
-			}(i)
-		}
+			}
+		}()
 
 		return hashMap, nil
 	}
@@ -634,20 +638,42 @@ func benchmarkProxy(b *testing.B, proxy C.ProxyAdapter) {
 	_, err = conn.Write([]byte("skip protocol handshake"))
 	require.NoError(b, err)
 
-	b.Run("Write", func(b *testing.B) {
-		b.SetBytes(chunkSize)
-		for i := 0; i < b.N; i++ {
-			conn.Write(chunk)
-		}
-	})
-
-	b.Run("Read", func(b *testing.B) {
-		b.SetBytes(chunkSize)
-		buf := make([]byte, chunkSize)
-		for i := 0; i < b.N; i++ {
-			io.ReadFull(conn, buf)
-		}
-	})
+	if extendedConn, ok := conn.(N.ExtendedConn); ok {
+		buffer := buf.New()
+		defer buffer.Release()
+		buffer.IncRef()
+		defer buffer.DecRef()
+		start := buffer.Start()
+		buffer.Write(chunk)
+		b.Run("write", func(b *testing.B) {
+			b.SetBytes(chunkSize)
+			for i := 0; i < b.N; i++ {
+				extendedConn.WriteBuffer(buffer)
+				buffer.Resize(start, int(chunkSize))
+			}
+		})
+		b.Run("Read", func(b *testing.B) {
+			b.SetBytes(chunkSize)
+			buf := make([]byte, chunkSize)
+			for i := 0; i < b.N; i++ {
+				io.ReadFull(conn, buf)
+			}
+		})
+	} else {
+		b.Run("Write", func(b *testing.B) {
+			b.SetBytes(chunkSize)
+			for i := 0; i < b.N; i++ {
+				conn.Write(chunk)
+			}
+		})
+		b.Run("Read", func(b *testing.B) {
+			b.SetBytes(chunkSize)
+			buf := make([]byte, chunkSize)
+			for i := 0; i < b.N; i++ {
+				io.ReadFull(conn, buf)
+			}
+		})
+	}
 }
 
 func TestClash_Basic(t *testing.T) {

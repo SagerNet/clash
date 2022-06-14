@@ -21,7 +21,7 @@ func exchange(address, domain string, tp uint16) ([]dns.RR, error) {
 	return r.Answer, nil
 }
 
-func TestClash_DNS(t *testing.T) {
+func _TestClash_DNS(t *testing.T) {
 	basic := `
 log-level: silent
 dns:
@@ -49,7 +49,7 @@ dns:
 	assert.Empty(t, rr)
 }
 
-func TestClash_DNSHostAndFakeIP(t *testing.T) {
+func _TestClash_DNSHostAndFakeIP(t *testing.T) {
 	basic := `
 log-level: silent
 hosts:

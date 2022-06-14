@@ -53,6 +53,8 @@ github.com/sagernet/sing v0.0.0-20220616051325-90beb46c6d22 h1:9qQB2pN/p6jI8vrCE
 github.com/sagernet/sing v0.0.0-20220616051325-90beb46c6d22/go.mod h1:I67R/q5f67xDExL2kL3RLIP7kGJBOPkYXkpRAykgC+E=
 github.com/sagernet/sing-shadowsocks v0.0.0-20220616051605-ba1ca0fe9782 h1:bf6n/GJqoahmm7QVom/4mDQWZfzDOSHhtqjW+v5FY1w=
 github.com/sagernet/sing-shadowsocks v0.0.0-20220616051605-ba1ca0fe9782/go.mod h1:ESfqAEwNqzskSQagM9HDcX8VVNcZ5rzbdAFJRkLw1YM=
+github.com/sagernet/sing-vmess v0.0.0-20220616051646-3d3fc5d01eec h1:jUSfKmyL6K9O2TvIvcVacZ4eNXHYbNSfdph+DRPyVlU=
+github.com/sagernet/sing-vmess v0.0.0-20220616051646-3d3fc5d01eec/go.mod h1:jDZ8fJgOea7Y7MMHWgfqwLBVLnhtW2zuxS5wjtDaB84=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
 github.com/sirupsen/logrus v1.8.1/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=

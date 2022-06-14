@@ -103,23 +103,23 @@ func NewBase(opt BaseOption) *Base {
 	}
 }
 
-type conn struct {
-	net.Conn
+type Conn struct {
+	N.ExtendedConn
 	chain C.Chain
 }
 
 // Chains implements C.Connection
-func (c *conn) Chains() C.Chain {
+func (c *Conn) Chains() C.Chain {
 	return c.chain
 }
 
 // AppendToChains implements C.Connection
-func (c *conn) AppendToChains(a C.ProxyAdapter) {
+func (c *Conn) AppendToChains(a C.ProxyAdapter) {
 	c.chain = append(c.chain, a.Name())
 }
 
 func NewConn(c net.Conn, a C.ProxyAdapter) C.Conn {
-	return &conn{c, []string{a.Name()}}
+	return &Conn{bufio.NewExtendedConn(c), []string{a.Name()}}
 }
 
 type packetConn struct {
