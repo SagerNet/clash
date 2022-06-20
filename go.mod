@@ -11,7 +11,7 @@ require (
 	github.com/insomniacslk/dhcp v0.0.0-20220504074936-1ca156eafb9f
 	github.com/miekg/dns v1.1.48
 	github.com/oschwald/geoip2-golang v1.7.0
-	github.com/sagernet/sing v0.0.0-20220616051325-90beb46c6d22
+	github.com/sagernet/sing v0.0.0-20220619130320-8793fe5e067d
 	github.com/sagernet/sing-shadowsocks v0.0.0-20220616051605-ba1ca0fe9782
 	github.com/sagernet/sing-vmess v0.0.0-20220616051646-3d3fc5d01eec
 	github.com/sirupsen/logrus v1.8.1
@@ -25,6 +25,10 @@ require (
 	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
+
+replace github.com/sagernet/sing => ../sing
+
+replace github.com/sagernet/sing-shadowsocks => ../sing-shadowsocks
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

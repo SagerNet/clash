@@ -49,10 +49,6 @@ github.com/oschwald/maxminddb-golang v1.9.0/go.mod h1:TK+s/Z2oZq0rSl4PSeAEoP0bgm
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prashantv/gostub v1.1.0 h1:BTyx3RfQjRHnUWaGF9oQos79AlQ5k8WNktv7VGvVH4g=
-github.com/sagernet/sing v0.0.0-20220616051325-90beb46c6d22 h1:9qQB2pN/p6jI8vrCEy/KOvjuvEgoaz6QNIX7BgPhwSw=
-github.com/sagernet/sing v0.0.0-20220616051325-90beb46c6d22/go.mod h1:I67R/q5f67xDExL2kL3RLIP7kGJBOPkYXkpRAykgC+E=
-github.com/sagernet/sing-shadowsocks v0.0.0-20220616051605-ba1ca0fe9782 h1:bf6n/GJqoahmm7QVom/4mDQWZfzDOSHhtqjW+v5FY1w=
-github.com/sagernet/sing-shadowsocks v0.0.0-20220616051605-ba1ca0fe9782/go.mod h1:ESfqAEwNqzskSQagM9HDcX8VVNcZ5rzbdAFJRkLw1YM=
 github.com/sagernet/sing-vmess v0.0.0-20220616051646-3d3fc5d01eec h1:jUSfKmyL6K9O2TvIvcVacZ4eNXHYbNSfdph+DRPyVlU=
 github.com/sagernet/sing-vmess v0.0.0-20220616051646-3d3fc5d01eec/go.mod h1:jDZ8fJgOea7Y7MMHWgfqwLBVLnhtW2zuxS5wjtDaB84=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=

@@ -57,14 +57,14 @@ type Controller struct {
 
 // DNS config
 type DNS struct {
-	Enable            bool             `yaml:"enable"`
-	IPv6              bool             `yaml:"ipv6"`
-	NameServer        []dns.NameServer `yaml:"nameserver"`
-	Fallback          []dns.NameServer `yaml:"fallback"`
-	FallbackFilter    FallbackFilter   `yaml:"fallback-filter"`
-	Listen            string           `yaml:"listen"`
-	EnhancedMode      C.DNSMode        `yaml:"enhanced-mode"`
-	DefaultNameserver []dns.NameServer `yaml:"default-nameserver"`
+	Enable            bool             `yaml:"enable,omitempty"`
+	IPv6              bool             `yaml:"ipv6,omitempty"`
+	NameServer        []dns.NameServer `yaml:"nameserver,omitempty"`
+	Fallback          []dns.NameServer `yaml:"fallback,omitempty"`
+	FallbackFilter    FallbackFilter   `yaml:"fallback-filter,omitempty"`
+	Listen            string           `yaml:"listen,omitempty"`
+	EnhancedMode      C.DNSMode        `yaml:"enhanced-mode,omitempty"`
+	DefaultNameserver []dns.NameServer `yaml:"default-nameserver,omitempty"`
 	FakeIPRange       *fakeip.Pool
 	Hosts             *trie.DomainTrie
 	NameServerPolicy  map[string]dns.NameServer
@@ -72,16 +72,16 @@ type DNS struct {
 
 // FallbackFilter config
 type FallbackFilter struct {
-	GeoIP     bool         `yaml:"geoip"`
-	GeoIPCode string       `yaml:"geoip-code"`
-	IPCIDR    []*net.IPNet `yaml:"ipcidr"`
-	Domain    []string     `yaml:"domain"`
+	GeoIP     bool         `yaml:"geoip,omitempty"`
+	GeoIPCode string       `yaml:"geoip-code,omitempty"`
+	IPCIDR    []*net.IPNet `yaml:"ipcidr,omitempty"`
+	Domain    []string     `yaml:"domain,omitempty"`
 }
 
 // Profile config
 type Profile struct {
-	StoreSelected bool `yaml:"store-selected"`
-	StoreFakeIP   bool `yaml:"store-fake-ip"`
+	StoreSelected bool `yaml:"store-selected,omitempty"`
+	StoreFakeIP   bool `yaml:"store-fake-ip,omitempty"`
 }
 
 // Experimental config
@@ -101,53 +101,53 @@ type Config struct {
 }
 
 type RawDNS struct {
-	Enable            bool              `yaml:"enable"`
-	IPv6              bool              `yaml:"ipv6"`
-	UseHosts          bool              `yaml:"use-hosts"`
-	NameServer        []string          `yaml:"nameserver"`
-	Fallback          []string          `yaml:"fallback"`
-	FallbackFilter    RawFallbackFilter `yaml:"fallback-filter"`
-	Listen            string            `yaml:"listen"`
-	EnhancedMode      C.DNSMode         `yaml:"enhanced-mode"`
-	FakeIPRange       string            `yaml:"fake-ip-range"`
-	FakeIPFilter      []string          `yaml:"fake-ip-filter"`
-	DefaultNameserver []string          `yaml:"default-nameserver"`
-	NameServerPolicy  map[string]string `yaml:"nameserver-policy"`
+	Enable            bool              `yaml:"enable,omitempty"`
+	IPv6              bool              `yaml:"ipv6,omitempty"`
+	UseHosts          bool              `yaml:"use-hosts,omitempty"`
+	NameServer        []string          `yaml:"nameserver,omitempty"`
+	Fallback          []string          `yaml:"fallback,omitempty"`
+	FallbackFilter    RawFallbackFilter `yaml:"fallback-filter,omitempty"`
+	Listen            string            `yaml:"listen,omitempty"`
+	EnhancedMode      C.DNSMode         `yaml:"enhanced-mode,omitempty"`
+	FakeIPRange       string            `yaml:"fake-ip-range,omitempty"`
+	FakeIPFilter      []string          `yaml:"fake-ip-filter,omitempty"`
+	DefaultNameserver []string          `yaml:"default-nameserver,omitempty"`
+	NameServerPolicy  map[string]string `yaml:"nameserver-policy,omitempty"`
 }
 
 type RawFallbackFilter struct {
-	GeoIP     bool     `yaml:"geoip"`
-	GeoIPCode string   `yaml:"geoip-code"`
-	IPCIDR    []string `yaml:"ipcidr"`
-	Domain    []string `yaml:"domain"`
+	GeoIP     bool     `yaml:"geoip,omitempty"`
+	GeoIPCode string   `yaml:"geoip-code,omitempty"`
+	IPCIDR    []string `yaml:"ipcidr,omitempty"`
+	Domain    []string `yaml:"domain,omitempty"`
 }
 
 type RawConfig struct {
-	Port               int          `yaml:"port"`
-	SocksPort          int          `yaml:"socks-port"`
-	RedirPort          int          `yaml:"redir-port"`
-	TProxyPort         int          `yaml:"tproxy-port"`
-	MixedPort          int          `yaml:"mixed-port"`
-	Authentication     []string     `yaml:"authentication"`
-	AllowLan           bool         `yaml:"allow-lan"`
-	BindAddress        string       `yaml:"bind-address"`
-	Mode               T.TunnelMode `yaml:"mode"`
-	LogLevel           log.LogLevel `yaml:"log-level"`
-	IPv6               bool         `yaml:"ipv6"`
-	ExternalController string       `yaml:"external-controller"`
-	ExternalUI         string       `yaml:"external-ui"`
-	Secret             string       `yaml:"secret"`
-	Interface          string       `yaml:"interface-name"`
-	RoutingMark        int          `yaml:"routing-mark"`
+	Port               int          `yaml:"port,omitempty"`
+	SocksPort          int          `yaml:"socks-port,omitempty"`
+	RedirPort          int          `yaml:"redir-port,omitempty"`
+	TProxyPort         int          `yaml:"tproxy-port,omitempty"`
+	MixedPort          int          `yaml:"mixed-port,omitempty"`
+	Authentication     []string     `yaml:"authentication,omitempty"`
+	AllowLan           bool         `yaml:"allow-lan,omitempty"`
+	BindAddress        string       `yaml:"bind-address,omitempty"`
+	Mode               T.TunnelMode `yaml:"mode,omitempty"`
+	LogLevel           log.LogLevel `yaml:"log-level,omitempty"`
+	IPv6               bool         `yaml:"ipv6,omitempty"`
+	ExternalController string       `yaml:"external-controller,omitempty"`
+	ExternalUI         string       `yaml:"external-ui,omitempty"`
+	Secret             string       `yaml:"secret,omitempty"`
+	Interface          string       `yaml:"interface-name,omitempty"`
+	RoutingMark        int          `yaml:"routing-mark,omitempty"`
 
-	ProxyProvider map[string]map[string]any `yaml:"proxy-providers"`
-	Hosts         map[string]string         `yaml:"hosts"`
-	DNS           RawDNS                    `yaml:"dns"`
-	Experimental  Experimental              `yaml:"experimental"`
-	Profile       Profile                   `yaml:"profile"`
-	Proxy         []map[string]any          `yaml:"proxies"`
-	ProxyGroup    []map[string]any          `yaml:"proxy-groups"`
-	Rule          []string                  `yaml:"rules"`
+	ProxyProvider map[string]map[string]any `yaml:"proxy-providers,omitempty"`
+	Hosts         map[string]string         `yaml:"hosts,omitempty"`
+	DNS           RawDNS                    `yaml:"dns,omitempty"`
+	Experimental  Experimental              `yaml:"experimental,omitempty"`
+	Profile       Profile                   `yaml:"profile,omitempty"`
+	Proxy         []map[string]any          `yaml:"proxies,omitempty"`
+	ProxyGroup    []map[string]any          `yaml:"proxy-groups,omitempty"`
+	Rule          []string                  `yaml:"rules,omitempty"`
 }
 
 // Parse config
